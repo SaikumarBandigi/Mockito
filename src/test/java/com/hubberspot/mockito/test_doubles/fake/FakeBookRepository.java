@@ -24,7 +24,7 @@ public class FakeBookRepository implements BookRepository {
 
     @Override
     public String getBookName(Book book) {
-        return book.getTitle();
+        return bookStore.get(book.getBookId()).getTitle();
     }
 
 

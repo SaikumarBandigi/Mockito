@@ -7,12 +7,44 @@ import org.mockito.Mockito;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class DummyTest {
+
+    static class Sai implements BookRepository {
+
+        // in-memory database,map or list
+        Map<String, Book> storeBook = new HashMap<>();
+
+        @Override
+        public void saveBook(Book book) {
+            storeBook.put(book.getBookId(), book);
+        }
+
+        @Override
+        public Collection<Book> findAll() {
+            return storeBook.values();
+        }
+
+        @Override
+        public String getBookName(Book book) {
+            return storeBook.get(book.getBookId()).getTitle();
+        }
+
+    }
+
+    static class Sonu implements EmailService {
+        @Override
+        public void sendEmail(String message) {
+            throw new AssertionError("Method not Found!!...");
+        }
+    }
+
 
     @Test
     public void testDummy() {
@@ -33,10 +65,11 @@ public class DummyTest {
 
     }
 
+
     @Test
     public void testDummyWithMockito() {
 
-         // test double with mockito
+        // test double with mockito
         BookRepository bookRepository = Mockito.mock(BookRepository.class);
         EmailService emailService = Mockito.mock(EmailService.class);
 
@@ -78,5 +111,28 @@ public class DummyTest {
         verify(bookRepository).getBookName(book1);
     }
 
+
+    @Test
+    public void testDummyUsingStaticInnerClass() {
+
+        // Create an instance of the Sai class
+        DummyTest.Sai sai = new DummyTest.Sai();
+
+        // Create an instance of the Sonu class (inner class of Sai)
+        DummyTest.Sonu sonu = new DummyTest.Sonu();
+
+        // Create an instance of the class under test with the inner class instances
+        BookService bookService = new BookService(sai, sonu);
+
+        // Create a sample book
+        Book book1 = new Book("1234", "Mockito", 100, LocalDate.now());
+
+        // Perform some actions using the class under test
+        bookService.addBook(book1);
+
+        // Assert the result using manual assertions
+        assertEquals("Mockito", bookService.getBookName(book1));
+
+    }
 
 }

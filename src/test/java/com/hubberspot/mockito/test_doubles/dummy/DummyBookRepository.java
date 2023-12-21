@@ -21,7 +21,7 @@ public class DummyBookRepository implements BookRepository {
 
     @Override
     public String getBookName(Book book) {
-        return storeBook.get(book).getTitle();
+        return storeBook.get(book.getBookId()).getTitle();
     }
 }
 
